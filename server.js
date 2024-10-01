@@ -72,6 +72,22 @@ app.post('/reset', (req, res)=>{
         res.json({ message: 'Статистика сброшена', statistics: emptyStatistics });
     })
 })
+
+app.post('/stat', (req, res)=>{
+    fs.readFile(path.join(__dirname, 'statistics.json'), 'utf8',(err, data)=>{
+        if (err) {
+            const statistics = {
+                option1: votes[1],
+                option2: votes[2],
+                option3: votes[3]
+            };
+            return res.json(statistics);
+        }
+
+        const statistics = JSON.parse(data);
+        res.json(statistics);
+    })
+})
 app.listen(PORT, () => {
     console.log(`Сервер запущен на http://localhost:${PORT}`);
 });
