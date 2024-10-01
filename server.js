@@ -29,7 +29,7 @@ app.get('/variants', (req, res) => {
     res.json(options);
 });
 
-app.post('/submit', (req, res) => {
+app.post('/vote', (req, res) => {
     const { selectedOption } = req.body;
     if (votes[selectedOption] !== undefined) {
         votes[selectedOption] += 1;
@@ -50,6 +50,28 @@ app.post('/submit', (req, res) => {
     })
 });
 
+app.post('/reset', (req, res)=>{
+    votes = {
+        1: 0,
+        2: 0,
+        3: 0
+    };
+
+    const emptyStatistics = {
+        option1: 0,
+        option2: 0,
+        option3: 0
+    };
+
+    fs.writeFile(path.join(__dirname, 'statistics.json'), JSON.stringify(emptyStatistics, null, 2), (err)=>{
+        if (err) {
+            console.error('Ошибка при очистке файла статистики:', err);
+            return res.status(500).json({ error: 'Ошибка при очистке файла' });
+        }
+
+        res.json({ message: 'Статистика сброшена', statistics: emptyStatistics });
+    })
+})
 app.listen(PORT, () => {
     console.log(`Сервер запущен на http://localhost:${PORT}`);
 });
