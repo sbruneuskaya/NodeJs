@@ -19,6 +19,16 @@ let votes = {
     3: 0
 };
 
+const options = [
+    { code: 1, text: 'Option 1' },
+    { code: 2, text: 'Option 2' },
+    { code: 3, text: 'Option 3' },
+];
+
+app.get('/variants', (req, res) => {
+    res.json(options);
+});
+
 app.post('/submit', (req, res) => {
     const { selectedOption } = req.body;
     if (votes[selectedOption] !== undefined) {
