@@ -3,6 +3,7 @@ const express = require('express')
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const fs = require('fs');
+const path = require('path');
 const app=express()
 const PORT= process.env.PORT || 8000;
 
@@ -30,7 +31,7 @@ app.post('/submit', (req, res) => {
         option3: votes[3]
     };
 
-    fs.writeFile(path.json(__dirname, 'statistics.json'), JSON.stringify(statistics, null, 2), (err)=>{
+    fs.writeFile(path.join(__dirname, 'statistics.json'), JSON.stringify(statistics, null, 2), (err)=>{
         if (err) {
             console.error('Ошибка при записи в файл:', err);
             return res.status(500).json({ error: 'Ошибка при записи данных' });
