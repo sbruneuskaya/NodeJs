@@ -7,12 +7,7 @@ const path = require('path');
 const app=express()
 const PORT= process.env.PORT || 8000;
 
-app.use(cors({
-    origin: [
-        'http://localhost:3000',
-        'https://node-ui.netlify.app'
-    ]
-}));
+app.use(cors());
 app.use(bodyParser.json());
 app.get('/', (req, res)=>{
     res.send('hi')
