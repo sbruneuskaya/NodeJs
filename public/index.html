@@ -5,96 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Голосование</title>
-    <script>
-        const API_URL = 'http://64.226.104.45'
-
-        async function fetchOptions() {
-            try {
-                const response = await fetch(`${API_URL}/variants`);
-                if (!response.ok) throw new Error('Ошибка при получении вариантов');
-                const options = await response.json();
-                return options;
-            } catch (error) {
-                console.error(error);
-            }
-        }
-
-        async function fetchStatistics() {
-            try {
-                const response = await fetch(`${API_URL}/stat`, { method: 'POST', headers: { 'Content-Type': 'application/json' } });
-                if (!response.ok) throw new Error('Ошибка при получении статистики');
-                return await response.json();
-            } catch (error) {
-                console.error(error);
-            }
-        }
-
-        async function submitVote(selectedOption) {
-            try {
-                const response = await fetch(`${API_URL}/vote`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ selectedOption }),
-                });
-                if (!response.ok) throw new Error('Ошибка при отправке данных');
-            } catch (error) {
-                console.error(error);
-            }
-        }
-
-        async function resetStatistics() {
-            try {
-                const response = await fetch(`${API_URL}/reset`, { method: 'POST' });
-                if (!response.ok) throw new Error('Ошибка при сбросе статистики');
-            } catch (error) {
-                console.error(error);
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', async () => {
-            const options = await fetchOptions();
-            const voteForm = document.getElementById('voteForm');
-            const optionsContainer = document.getElementById('optionsContainer');
-
-            options.forEach(option => {
-                const label = document.createElement('label');
-                label.innerHTML = `<input type="radio" name="option" value="${option.code}" required> ${option.text}`;
-                optionsContainer.appendChild(label);
-            });
-
-            voteForm.addEventListener('submit', async (event) => {
-                event.preventDefault();
-                const selectedOption = voteForm.elements['option'].value;
-                await submitVote(selectedOption);
-                const statistics = await fetchStatistics();
-                displayStatistics(statistics);
-            });
-
-            document.getElementById('resetButton').addEventListener('click', async () => {
-                await resetStatistics();
-                const statistics = await fetchStatistics();
-                displayStatistics(statistics);
-            });
-
-            function displayStatistics(statistics) {
-                const statsContainer = document.getElementById('statisticsContainer');
-                statsContainer.innerHTML = `<h2>Статистика голосов</h2>`;
-                Object.keys(statistics).forEach(key => {
-                    statsContainer.innerHTML += `<p>${key}: ${statistics[key]} голосов</p>`;
-                });
-            }
-        });
-    </script>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
 </head>
 <body>
 <div class="container">
-    <h1>Голосование</h1>
+    <h6>Как вы предпочитаете проводить свободное время?</h6>
     <form id="voteForm">
         <div id="optionsContainer"></div>
-        <button type="submit">Отправить</button>
-        <button type="button" id="resetButton">Сбросить</button>
+        <button class="btn waves-effect waves-light" type="submit" name="action">Submit</button>
+        <button class="btn waves-effect red"  type="button" id="resetButton" name="actionReset">Reset</button>
     </form>
     <div id="statisticsContainer"></div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script src="app.js"></script>
 </body>
 </html>

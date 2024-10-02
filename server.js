@@ -21,9 +21,9 @@ let votes = {
 };
 
 const options = [
-    { code: 1, text: 'Option 1' },
-    { code: 2, text: 'Option 2' },
-    { code: 3, text: 'Option 3' },
+    { code: 1, text: 'Путешествия' },
+    { code: 2, text: 'Спорт и активный отдых' },
+    { code: 3, text: 'Чтение и творчество' },
 ];
 
 app.get('/variants', (req, res) => {
