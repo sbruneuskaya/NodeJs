@@ -91,59 +91,81 @@ app.post('/stat', (req, res)=>{
 })
 
 app.get('/download/json', (req, res) => {
-    fs.readFile(path.join(__dirname, 'statistics.json'), 'utf8', (err, data) => {
+    const filePath = path.join(__dirname, 'statistics.json');
+    fs.access(filePath, fs.constants.F_OK, (err) => {
         if (err) {
-            return res.status(500).json({ error: 'Ошибка при чтении файла' });
+            return res.status(404).json({ error: 'Файл statistics.json не найден' });
         }
 
-        res.setHeader('Content-Disposition', 'attachment; filename="statistics.json"');
-        res.setHeader('Content-Type', 'application/json');
-        res.send(data);
+        fs.readFile(filePath, 'utf8', (err, data) => {
+            if (err) {
+                return res.status(500).json({ error: 'Ошибка при чтении файла' });
+            }
+
+            res.setHeader('Content-Disposition', 'attachment; filename="statistics.json"');
+            res.setHeader('Content-Type', 'application/json');
+            res.send(data);
+        });
     });
 });
 
 app.get('/download/xml', (req, res) => {
-    fs.readFile(path.join(__dirname, 'statistics.json'), 'utf8', (err, data) => {
+    const filePath = path.join(__dirname, 'statistics.json');
+    fs.access(filePath, fs.constants.F_OK, (err) => {
         if (err) {
-            return res.status(500).json({ error: 'Ошибка при чтении файла' });
+            return res.status(404).json({ error: 'Файл statistics.json не найден' });
         }
 
-        const statistics = JSON.parse(data);
-        let xmlData = '<?xml version="1.0" encoding="UTF-8"?>\n<statistics>\n';
-        Object.keys(statistics).forEach(key => {
-            xmlData += `  <${key}>${statistics[key]}</${key}>\n`;
-        });
-        xmlData += '</statistics>';
+        fs.readFile(filePath, 'utf8', (err, data) => {
+            if (err) {
+                return res.status(500).json({ error: 'Ошибка при чтении файла' });
+            }
 
-        res.setHeader('Content-Disposition', 'attachment; filename="statistics.xml"');
-        res.setHeader('Content-Type', 'application/xml');
-        res.send(xmlData);
+            const statistics = JSON.parse(data);
+            let xmlData = '<?xml version="1.0" encoding="UTF-8"?>\n<statistics>\n';
+            Object.keys(statistics).forEach(key => {
+                xmlData += `  <${key}>${statistics[key]}</${key}>\n`;
+            });
+            xmlData += '</statistics>';
+
+            res.setHeader('Content-Disposition', 'attachment; filename="statistics.xml"');
+            res.setHeader('Content-Type', 'application/xml');
+            res.send(xmlData);
+        });
     });
 });
 
 app.get('/download/html', (req, res) => {
-    fs.readFile(path.join(__dirname, 'statistics.json'), 'utf8', (err, data) => {
+    const filePath = path.join(__dirname, 'statistics.json');
+    fs.access(filePath, fs.constants.F_OK, (err) => {
         if (err) {
-            return res.status(500).json({ error: 'Ошибка при чтении файла' });
+            return res.status(404).json({ error: 'Файл statistics.json не найден' });
         }
 
-        const statistics = JSON.parse(data);
-        let htmlData = `<!doctype html>
-        <html lang="en">
-        <head><meta charset="UTF-8"><title>Статистика</title></head>
-        <body><h1>Результаты голосования</h1><ul>`;
+        fs.readFile(filePath, 'utf8', (err, data) => {
+            if (err) {
+                return res.status(500).json({ error: 'Ошибка при чтении файла' });
+            }
 
-        Object.keys(statistics).forEach(key => {
-            htmlData += `<li>${key}: ${statistics[key]}</li>`;
+            const statistics = JSON.parse(data);
+            let htmlData = `<!doctype html>
+            <html lang="en">
+            <head><meta charset="UTF-8"><title>Статистика</title></head>
+            <body><h1>Результаты голосования</h1><ul>`;
+
+            Object.keys(statistics).forEach(key => {
+                htmlData += `<li>${key}: ${statistics[key]}</li>`;
+            });
+
+            htmlData += '</ul></body></html>';
+
+            res.setHeader('Content-Disposition', 'attachment; filename="statistics.html"');
+            res.setHeader('Content-Type', 'text/html');
+            res.send(htmlData);
         });
-
-        htmlData += '</ul></body></html>';
-
-        res.setHeader('Content-Disposition', 'attachment; filename="statistics.html"');
-        res.setHeader('Content-Type', 'text/html');
-        res.send(htmlData);
     });
 });
+
 
 app.listen(PORT, () => {
     console.log(`Сервер запущен`);

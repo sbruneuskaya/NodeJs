@@ -97,19 +97,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    document.querySelector('button[onclick="saveXML"]').addEventListener('click', () => {
-        window.location.href = '/download/xml';
-    });
-
-    document.querySelector('button[onclick="saveHTML"]').addEventListener('click', () => {
-        window.location.href = '/download/html';
-    });
-
-    document.querySelector('button[onclick="saveJSON"]').addEventListener('click', () => {
-        window.location.href = '/download/json';
-    });
-
 
 });
+
+function saveXML() {
+    window.location.href = '/download/xml';
+}
+
+function saveHTML() {
+    window.location.href = '/download/html';
+}
+
+function saveJSON() {
+    window.location.href = '/download/json';
+}
+
 
 
