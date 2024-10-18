@@ -90,26 +90,7 @@ app.post('/stat', (req, res)=>{
     })
 })
 
-app.get('/download/json', (req, res) => {
-    const filePath = path.join(__dirname, 'statistics.json');
-    fs.access(filePath, fs.constants.F_OK, (err) => {
-        if (err) {
-            return res.status(404).json({ error: 'Файл statistics.json не найден' });
-        }
-
-        fs.readFile(filePath, 'utf8', (err, data) => {
-            if (err) {
-                return res.status(500).json({ error: 'Ошибка при чтении файла' });
-            }
-
-            res.setHeader('Content-Disposition', 'attachment; filename="statistics.json"');
-            res.setHeader('Content-Type', 'application/json');
-            res.send(data);
-        });
-    });
-});
-
-app.get('/download/xml', (req, res) => {
+app.get('/download', (req, res) => {
     const filePath = path.join(__dirname, 'statistics.json');
     fs.access(filePath, fs.constants.F_OK, (err) => {
         if (err) {
@@ -122,49 +103,34 @@ app.get('/download/xml', (req, res) => {
             }
 
             const statistics = JSON.parse(data);
-            let xmlData = '<?xml version="1.0" encoding="UTF-8"?>\n<statistics>\n';
-            Object.keys(statistics).forEach(key => {
-                xmlData += `  <${key}>${statistics[key]}</${key}>\n`;
-            });
-            xmlData += '</statistics>';
+            const acceptHeader = req.headers.accept;
 
-            res.setHeader('Content-Disposition', 'attachment; filename="statistics.xml"');
-            res.setHeader('Content-Type', 'application/xml');
-            res.send(xmlData);
-        });
-    });
-});
-
-app.get('/download/html', (req, res) => {
-    const filePath = path.join(__dirname, 'statistics.json');
-    fs.access(filePath, fs.constants.F_OK, (err) => {
-        if (err) {
-            return res.status(404).json({ error: 'Файл statistics.json не найден' });
-        }
-
-        fs.readFile(filePath, 'utf8', (err, data) => {
-            if (err) {
-                return res.status(500).json({ error: 'Ошибка при чтении файла' });
+            if (acceptHeader.includes('application/json')) {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(statistics, null, 2));
+            } else if (acceptHeader.includes('application/xml')) {
+                let xmlData = '<?xml version="1.0" encoding="UTF-8"?>\n<statistics>\n';
+                Object.keys(statistics).forEach(key => {
+                    xmlData += `  <${key}>${statistics[key]}</${key}>\n`;
+                });
+                xmlData += '</statistics>';
+                res.setHeader('Content-Type', 'application/xml');
+                res.send(xmlData);
+            } else if (acceptHeader.includes('text/html')) {
+                let htmlData = `<!doctype html><html><head><title>Статистика</title></head><body><h1>Результаты</h1><ul>`;
+                Object.keys(statistics).forEach(key => {
+                    htmlData += `<li>${key}: ${statistics[key]}</li>`;
+                });
+                htmlData += '</ul></body></html>';
+                res.setHeader('Content-Type', 'text/html');
+                res.send(htmlData);
+            } else {
+                res.status(406).send('другой формат');
             }
-
-            const statistics = JSON.parse(data);
-            let htmlData = `<!doctype html>
-            <html lang="en">
-            <head><meta charset="UTF-8"><title>Статистика</title></head>
-            <body><h1>Результаты голосования</h1><ul>`;
-
-            Object.keys(statistics).forEach(key => {
-                htmlData += `<li>${key}: ${statistics[key]}</li>`;
-            });
-
-            htmlData += '</ul></body></html>';
-
-            res.setHeader('Content-Disposition', 'attachment; filename="statistics.html"');
-            res.setHeader('Content-Type', 'text/html');
-            res.send(htmlData);
         });
     });
 });
+
 
 
 app.listen(PORT, () => {

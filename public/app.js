@@ -100,17 +100,28 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 });
 
-function saveXML() {
-    window.location.href = '/download/xml';
+async function downloadStatistics(format) {
+    try {
+        const response = await fetch('/download', {
+            headers: {
+                'Accept': format
+            }
+        });
+        const data = await response.blob();
+
+        const fakeBtn = document.createElement('a');
+        fakeBtn.href = window.URL.createObjectURL(new Blob([data]));
+        fakeBtn.download = `statistics.${format.split('/')[1]}`;
+        fakeBtn.click();
+    } catch (error) {
+        console.error('Ошибка при скачивании:', error);
+    }
 }
 
-function saveHTML() {
-    window.location.href = '/download/html';
-}
+document.getElementById('saveXML').addEventListener('click', () => downloadStatistics('application/xml'));
+document.getElementById('saveHTML').addEventListener('click', () => downloadStatistics('text/html'));
+document.getElementById('saveJSON').addEventListener('click', () => downloadStatistics('application/json'));
 
-function saveJSON() {
-    window.location.href = '/download/json';
-}
 
 
 
