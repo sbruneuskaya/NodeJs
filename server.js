@@ -14,11 +14,21 @@ app.get('/', (req, res)=>{
     res.sendFile(path.join(__dirname, 'public', 'index.html'))
 })
 
-let votes = {
-    1: 0,
-    2: 0,
-    3: 0
+const loadStatistics = () => {
+    const statsPath = path.join(__dirname, 'statistics.json');
+    if (fs.existsSync(statsPath)) {
+        const data = fs.readFileSync(statsPath, 'utf8');
+        return JSON.parse(data);
+    }
+    return {
+        1: 0,
+        2: 0,
+        3: 0
+    };
 };
+
+let votes = loadStatistics();
+
 
 const options = [
     { code: 1, text: 'Путешествия' },
@@ -48,8 +58,9 @@ app.post('/vote', (req, res) => {
             return res.status(500).json({ error: 'Ошибка при записи данных' });
         }
         res.json(statistics);
-    })
+    });
 });
+
 
 app.post('/reset', (req, res)=>{
     votes = {
@@ -90,5 +101,5 @@ app.post('/stat', (req, res)=>{
     })
 })
 app.listen(PORT, () => {
-    console.log(`Сервер запущен на http://localhost:${PORT}`);
+    console.log(`Сервер запущен`);
 });

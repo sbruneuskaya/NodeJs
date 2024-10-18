@@ -56,19 +56,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         optionsContainer.appendChild(label);
     });
 
+    const statistics = await fetchStatistics();
+    displayStatistics(statistics);
 
     voteForm.addEventListener('submit', async (event) => {
         event.preventDefault();
         const selectedOption = voteForm.elements['option'].value;
         await submitVote(selectedOption);
-        const statistics = await fetchStatistics();
-        displayStatistics(statistics);
+        const updatedStatistics = await fetchStatistics();
+        displayStatistics(updatedStatistics);
     });
 
     document.getElementById('resetButton').addEventListener('click', async () => {
         await resetStatistics();
-        const statistics = await fetchStatistics();
-        displayStatistics(statistics);
+        const resetStatisticsData = await fetchStatistics();
+        displayStatistics(resetStatisticsData);
     });
 
     function displayStatistics(statistics) {
@@ -89,5 +91,5 @@ document.addEventListener('DOMContentLoaded', async () => {
         `;
         });
     }
-
 });
+
