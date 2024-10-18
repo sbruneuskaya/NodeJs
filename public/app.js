@@ -56,26 +56,33 @@ document.addEventListener('DOMContentLoaded', async () => {
         optionsContainer.appendChild(label);
     });
 
+    const statistics = await fetchStatistics();
+    displayStatistics(statistics);
 
     voteForm.addEventListener('submit', async (event) => {
         event.preventDefault();
         const selectedOption = voteForm.elements['option'].value;
         await submitVote(selectedOption);
-        const statistics = await fetchStatistics();
-        displayStatistics(statistics);
+        const updatedStatistics = await fetchStatistics();
+        displayStatistics(updatedStatistics);
     });
 
     document.getElementById('resetButton').addEventListener('click', async () => {
         await resetStatistics();
-        const statistics = await fetchStatistics();
-        displayStatistics(statistics);
+        const updatedStatistics = await fetchStatistics();
+        displayStatistics(updatedStatistics);
     });
 
     function displayStatistics(statistics) {
         const statsContainer = document.getElementById('statisticsContainer');
         statsContainer.innerHTML = '';
 
+        // Проверка на наличие голосов
         const totalVotes = Object.values(statistics).reduce((a, b) => a + b, 0);
+        if (totalVotes === 0) {
+            // Если все голоса равны нулю, не показываем статистику
+            return;
+        }
 
         Object.keys(statistics).forEach((key, index) => {
             const percentage = totalVotes ? (statistics[key] / totalVotes) * 100 : 0;
@@ -90,4 +97,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    document.querySelector('button[onclick="saveXML"]').addEventListener('click', () => {
+        window.location.href = '/download/xml';
+    });
+
+    document.querySelector('button[onclick="saveHTML"]').addEventListener('click', () => {
+        window.location.href = '/download/html';
+    });
+
+    document.querySelector('button[onclick="saveJSON"]').addEventListener('click', () => {
+        window.location.href = '/download/json';
+    });
+
+
 });
+
+
